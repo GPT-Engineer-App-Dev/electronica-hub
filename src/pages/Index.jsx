@@ -1,8 +1,37 @@
-import { Box, Container, VStack, Text, Image, Grid, GridItem, Heading, Link, Flex, Spacer, HStack, Button, Input, InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
-import { FaSearch } from "react-icons/fa";
-import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
+import { useState } from "react";
+import { Box, Container, VStack, Text, Image, Grid, GridItem, Heading, Link, Flex, Spacer, HStack, Button, Input, InputGroup, InputRightElement, IconButton, Select } from "@chakra-ui/react";
+import { FaSearch, FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 const Index = () => {
+  const [products, setProducts] = useState([
+    { id: 1, name: "Product 1", price: 199.99, brand: "Brand A", type: "Laptop", image: "https://via.placeholder.com/250" },
+    { id: 2, name: "Product 2", price: 299.99, brand: "Brand B", type: "Phone", image: "https://via.placeholder.com/250" },
+    { id: 3, name: "Product 3", price: 399.99, brand: "Brand A", type: "Tablet", image: "https://via.placeholder.com/250" },
+    { id: 4, name: "Product 4", price: 499.99, brand: "Brand C", type: "Laptop", image: "https://via.placeholder.com/250" },
+  ]);
+
+  const [filters, setFilters] = useState({
+    price: "",
+    brand: "",
+    type: ""
+  });
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({
+      ...filters,
+      [name]: value
+    });
+  };
+
+  const filteredProducts = products.filter(product => {
+    return (
+      (filters.price === "" || product.price <= parseFloat(filters.price)) &&
+      (filters.brand === "" || product.brand === filters.brand) &&
+      (filters.type === "" || product.type === filters.type)
+    );
+  });
+
   return (
     <Container maxW="container.xl" p={0}>
       {/* Navigation Bar */}
@@ -34,46 +63,44 @@ const Index = () => {
         <Button colorScheme="blue" size="lg">Shop Now</Button>
       </Box>
 
+      {/* Filter Section */}
+      <Box as="section" py={10}>
+        <Heading size="lg" mb={6} textAlign="center">Filter Products</Heading>
+        <Flex justify="center" mb={6}>
+          <Select placeholder="Select Price" name="price" onChange={handleFilterChange} maxW="200px" mr={4}>
+            <option value="200">Under $200</option>
+            <option value="300">Under $300</option>
+            <option value="400">Under $400</option>
+            <option value="500">Under $500</option>
+          </Select>
+          <Select placeholder="Select Brand" name="brand" onChange={handleFilterChange} maxW="200px" mr={4}>
+            <option value="Brand A">Brand A</option>
+            <option value="Brand B">Brand B</option>
+            <option value="Brand C">Brand C</option>
+          </Select>
+          <Select placeholder="Select Type" name="type" onChange={handleFilterChange} maxW="200px">
+            <option value="Laptop">Laptop</option>
+            <option value="Phone">Phone</option>
+            <option value="Tablet">Tablet</option>
+          </Select>
+        </Flex>
+      </Box>
+
       {/* Product Grid */}
       <Box as="section" py={10}>
         <Heading size="lg" mb={6} textAlign="center">Our Products</Heading>
         <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={6}>
-          <GridItem>
-            <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <Image src="https://via.placeholder.com/250" alt="Product 1" />
-              <Box p={6}>
-                <Heading size="md" mb={2}>Product 1</Heading>
-                <Text>$199.99</Text>
+          {filteredProducts.map(product => (
+            <GridItem key={product.id}>
+              <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
+                <Image src={product.image} alt={product.name} />
+                <Box p={6}>
+                  <Heading size="md" mb={2}>{product.name}</Heading>
+                  <Text>${product.price}</Text>
+                </Box>
               </Box>
-            </Box>
-          </GridItem>
-          <GridItem>
-            <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <Image src="https://via.placeholder.com/250" alt="Product 2" />
-              <Box p={6}>
-                <Heading size="md" mb={2}>Product 2</Heading>
-                <Text>$299.99</Text>
-              </Box>
-            </Box>
-          </GridItem>
-          <GridItem>
-            <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <Image src="https://via.placeholder.com/250" alt="Product 3" />
-              <Box p={6}>
-                <Heading size="md" mb={2}>Product 3</Heading>
-                <Text>$399.99</Text>
-              </Box>
-            </Box>
-          </GridItem>
-          <GridItem>
-            <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
-              <Image src="https://via.placeholder.com/250" alt="Product 4" />
-              <Box p={6}>
-                <Heading size="md" mb={2}>Product 4</Heading>
-                <Text>$499.99</Text>
-              </Box>
-            </Box>
-          </GridItem>
+            </GridItem>
+          ))}
         </Grid>
       </Box>
 
